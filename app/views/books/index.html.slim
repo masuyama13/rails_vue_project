@@ -14,10 +14,10 @@ table
       tr
         td = book.title
         td = book.description
-        td = link_to 'Show', book
-        td = link_to 'Edit', edit_book_path(book)
-        td = link_to 'Destroy', book, data: { confirm: 'Are you sure?' }, method: :delete
+        td = link_to 'Show', book, class: "button is-light"
+        td = link_to 'Edit', edit_book_path(book), class: "button is-light"
+        td = link_to 'Destroy', book, data: { confirm: 'Are you sure?' }, method: :delete, class: "button is-text"
 
 br
 
-= link_to 'New Book', new_book_path
+= link_to 'New Book', new_book_path, class: "button is-primary is-light"

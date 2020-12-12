@@ -8,4 +8,20 @@ html
     = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
   body
+    section.hero.is-primary.is-medium
+      .hero-head
+        nav.navbar
+          .container
+            .navbar-brand
+              a.navbar-item href='/'
+                .title
+                  | RailsVueProject
+            #navbarMenuHeroA.navbar-menu
+              .navbar-end
+                a.navbar-item href='/books'
+                  | Books
+                a.navbar-item href='/'
+                  | Fruits
+                a.navbar-item href='/'
+                  | Documentation
     = yield
