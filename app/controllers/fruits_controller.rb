@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 class FruitsController < ApplicationController
   before_action :set_fruit, only: [:show, :edit, :update, :destroy]
 
   # GET /fruits
   # GET /fruits.json
   def index
-    @fruits = Fruit.all.order('position')
+    @fruits = Fruit.all.order("position")
   end
 
   # GET /fruits/1
@@ -28,7 +30,7 @@ class FruitsController < ApplicationController
 
     respond_to do |format|
       if @fruit.save
-        format.html { redirect_to @fruit, notice: 'Fruit was successfully created.' }
+        format.html { redirect_to @fruit, notice: "Fruit was successfully created." }
         format.json { render :show, status: :created, location: @fruit }
       else
         format.html { render :new }
@@ -42,7 +44,7 @@ class FruitsController < ApplicationController
   def update
     respond_to do |format|
       if @fruit.update(fruit_params)
-        format.html { redirect_to @fruit, notice: 'Fruit was successfully updated.' }
+        format.html { redirect_to @fruit, notice: "Fruit was successfully updated." }
         format.json { render :show, status: :ok, location: @fruit }
       else
         format.html { render :edit }
@@ -56,7 +58,7 @@ class FruitsController < ApplicationController
   def destroy
     @fruit.destroy
     respond_to do |format|
-      format.html { redirect_to fruits_url, notice: 'Fruit was successfully destroyed.' }
+      format.html { redirect_to fruits_url, notice: "Fruit was successfully destroyed." }
       format.json { head :no_content }
     end
   end
