@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <p>{{ message }}</p>
+    <p>{{ fruits }}</p>
 
     <table>
       <thead>
@@ -12,24 +12,30 @@
           <th></th>
         </tr>
       </thead>
-      <tbody>
+      <draggable v-model="fruits" tag="tbody">
         <tr v-for="fruit in fruits">
           <td>{{ fruit.name }}</td>
           <td>{{ fruit.description }}</td>
         </tr>
-      </tbody>
+      </draggable>
     </table>
     <p>----- Vue ここまで -----</p>
   </div>
 </template>
 
 <script>
+import draggable from "vuedraggable"
+
 export default {
   data() {
     return {
       message: "Hello Vue!",
-      fruits: []
+      fruits: [],
+      dragging: false
     }
+  },
+  components: {
+    draggable
   },
   created() {
     fetch(`/fruits.json`, {
