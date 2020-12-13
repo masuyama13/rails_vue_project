@@ -1,4 +1,6 @@
-require 'test_helper'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class FruitsControllerTest < ActionDispatch::IntegrationTest
   setup do
@@ -16,7 +18,7 @@ class FruitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create fruit" do
-    assert_difference('Fruit.count') do
+    assert_difference("Fruit.count") do
       post fruits_url, params: { fruit: { description: @fruit.description, name: @fruit.name } }
     end
 
@@ -39,7 +41,7 @@ class FruitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should destroy fruit" do
-    assert_difference('Fruit.count', -1) do
+    assert_difference("Fruit.count", -1) do
       delete fruit_url(@fruit)
     end
 
