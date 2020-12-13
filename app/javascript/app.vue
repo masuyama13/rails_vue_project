@@ -7,15 +7,17 @@
         <tr>
           <th>Name</th>
           <th>Description</th>
+          <th>Position</th>
           <th></th>
           <th></th>
           <th></th>
         </tr>
       </thead>
-      <draggable v-model="fruits" tag="tbody">
+      <draggable v-model="fruits" tag="tbody" @end="dropped">
         <tr v-for="fruit in fruits">
           <td>{{ fruit.name }}</td>
           <td>{{ fruit.description }}</td>
+          <td>{{ fruit.position }}</td>
         </tr>
       </draggable>
     </table>
@@ -25,6 +27,7 @@
 
 <script>
 import draggable from "vuedraggable"
+import "whatwg-fetch"
 
 export default {
   data() {
@@ -54,6 +57,40 @@ export default {
       .catch(error => {
         console.warn('Failed to parsing', error)
       })
+  },
+  methods: {
+    token () {
+      const meta = document.querySelector('meta[name="csrf-token"]')
+      return meta ? meta.getAttribute('content') : ''
+    },
+    dropped() {
+      this.fruits.forEach((fruit, index) => {
+        fruit.position = index + 1
+
+        let params = {
+          'position': fruit.position
+        }
+        // console.log('デバッグ用')
+        // console.log(fruit.id)
+        fetch(`/fruits/${fruit.id}.json`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-Token': this.token()
+          },
+          credentials: 'same-origin',
+          redirect: 'manual',
+          body: JSON.stringify(params)
+        })
+        .then(response => {
+          this.editing = false;
+        })
+        .catch(error => {
+          console.warn('Failed to parsing', error)
+        })
+      })
+    }
   }
 }
 </script>
