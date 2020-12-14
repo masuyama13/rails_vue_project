@@ -1,22 +1,65 @@
 <template>
   <div id="app">
-    <p>{{ message }}</p>
+    <p>{{ fruits }}</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <draggable v-model="fruits" tag="tbody">
+        <tr v-for="fruit in fruits">
+          <td>{{ fruit.name }}</td>
+          <td>{{ fruit.description }}</td>
+        </tr>
+      </draggable>
+    </table>
+    <p>----- Vue ここまで -----</p>
   </div>
 </template>
 
 <script>
+import draggable from "vuedraggable"
+
 export default {
-  data: function () {
+  data() {
     return {
-      message: "Hello Vue!"
+      message: "Hello Vue!",
+      fruits: [],
+      dragging: false
     }
+  },
+  components: {
+    draggable
+  },
+  created() {
+    fetch(`/fruits.json`, {
+      method: 'GET',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      credentials: 'same-origin',
+    })
+      .then(response => {
+        return response.json()
+      })
+      .then(json => {
+        json.forEach(c => { this.fruits.push(c) });
+      })
+      .catch(error => {
+        console.warn('Failed to parsing', error)
+      })
   }
 }
 </script>
 
 <style scoped>
 p {
-  font-size: 2em;
   text-align: center;
 }
 </style>
