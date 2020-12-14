@@ -7,7 +7,7 @@
         <tr>
           <th>Name</th>
           <th>Description</th>
-          <th></th>
+          <th>Position</th>
           <th></th>
           <th></th>
         </tr>
@@ -16,6 +16,9 @@
         <tr v-for="fruit in fruits">
           <td>{{ fruit.name }}</td>
           <td>{{ fruit.description }}</td>
+          <td>{{ fruit.position }}</td>
+          <td><a :href="`/fruits/${fruit.id}/edit`">Edit</a></td>
+          <td><a>Destroy</a></td>
         </tr>
       </draggable>
     </table>
@@ -29,9 +32,8 @@ import draggable from "vuedraggable"
 export default {
   data() {
     return {
-      message: "Hello Vue!",
       fruits: [],
-      dragging: false
+      dragging: false,
     }
   },
   components: {
