@@ -32,7 +32,6 @@ import "whatwg-fetch"
 export default {
   data() {
     return {
-      message: "Hello Vue!",
       fruits: [],
       dragging: false
     }
@@ -67,11 +66,13 @@ export default {
       this.fruits.forEach((fruit, index) => {
         fruit.position = index + 1
 
+        // console.log('デバッグ用')
+        // console.log(fruit.id)
+      })
+      this.fruits.forEach((fruit) => {
         let params = {
           'position': fruit.position
         }
-        // console.log('デバッグ用')
-        // console.log(fruit.id)
         fetch(`/fruits/${fruit.id}.json`, {
           method: 'PATCH',
           headers: {
@@ -84,10 +85,13 @@ export default {
           body: JSON.stringify(params)
         })
         .then(response => {
-          this.editing = false;
+          if (!response.ok) {
+            throw new Error('Network response was not ok')
+          }
+          return response.blob()
         })
         .catch(error => {
-          console.warn('Failed to parsing', error)
+          console.error('Failed to parsing', error)
         })
       })
     }
