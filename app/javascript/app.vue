@@ -18,7 +18,7 @@
           <td>{{ fruit.description }}</td>
           <td>{{ fruit.position }}</td>
           <td><a :href="`/fruits/${fruit.id}/edit`">Edit</a></td>
-          <td><a>Destroy</a></td>
+          <td><a @click="destroyFruit(fruit.id)">Destroy</a></td>
         </tr>
       </draggable>
     </table>
@@ -33,11 +33,42 @@ export default {
   data() {
     return {
       fruits: [],
-      dragging: false,
+      dragging: false
     }
   },
   components: {
     draggable
+  },
+  methods: {
+    token () {
+      const meta = document.querySelector('meta[name="csrf-token"]')
+      return meta ? meta.getAttribute('content') : ''
+    },
+    destroyFruit(id) {
+      let params = {
+        id: this.id
+      }
+      fetch(`/fruits/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-Token': this.token()
+        },
+        credentials: 'same-origin',
+        redirect: 'manual',
+        body: JSON.stringify(params)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.blob();
+      })
+      .catch(error => {
+        console.error('There has been a problem with your fetch operation:', error)
+      })
+    }
   },
   created() {
     fetch('/fruits.json', {
