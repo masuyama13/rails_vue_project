@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <p>{{ fruits }}</p>
+    <button @click="addFruit">Add Fruit</button>
 
     <table>
       <thead>
@@ -12,7 +13,7 @@
           <th></th>
         </tr>
       </thead>
-      <draggable v-model="fruits" tag="tbody">
+      <draggable v-model="fruits" tag="tbody" @end="dropped">
         <tr v-for="fruit in fruits">
           <td>{{ fruit.name }}</td>
           <td>{{ fruit.description }}</td>
@@ -39,10 +40,54 @@ export default {
   components: {
     draggable
   },
+  created() {
+    fetch('/fruits.json', {
+      method: 'GET',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      credentials: 'same-origin',
+    })
+    .then(response => {
+      console.log(response)
+      return response.json().then(json => {
+        this.fruits = json
+      })
+    })
+    .catch(error => {
+      console.warn('Failed to parsing', error)
+    })
+  },
   methods: {
     token () {
       const meta = document.querySelector('meta[name="csrf-token"]')
       return meta ? meta.getAttribute('content') : ''
+    },
+    addFruit() {
+      let params = {
+        name: '何かの果物',
+        description: '特になし。'
+      }
+      fetch('/api/fruits', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-Token': this.token()
+        },
+        credentials: 'same-origin',
+        redirect: 'manual',
+        body: JSON.stringify(params)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.blob();
+      })
+      .catch(error => {
+        console.error('There has been a problem with your fetch operation:', error)
+      })
     },
     destroyFruit(id) {
       let params = {
@@ -68,25 +113,39 @@ export default {
       .catch(error => {
         console.error('There has been a problem with your fetch operation:', error)
       })
-    }
-  },
-  created() {
-    fetch('/fruits.json', {
-      method: 'GET',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-      },
-      credentials: 'same-origin',
-    })
-    .then(response => {
-      console.log(response)
-      return response.json().then(json => {
-        this.fruits = json
+    },
+    dropped() {
+      this.fruits.forEach((fruit, index) => {
+        fruit.position = index + 1
+        console.log('デバッグ用')
+        console.log(fruit.id)
       })
-    })
-    .catch(error => {
-      console.warn('Failed to parsing', error)
-    })
+      this.fruits.forEach((fruit) => {
+        let params = {
+          'position': fruit.position
+        }
+        fetch(`/api/fruits/${fruit.id}.json`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-Token': this.token()
+          },
+          credentials: 'same-origin',
+          redirect: 'manual',
+          body: JSON.stringify(params)
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok')
+          }
+          return response.blob()
+        })
+        .catch(error => {
+          console.error('Failed to parsing', error)
+        })
+      })
+    }
   }
 }
 </script>

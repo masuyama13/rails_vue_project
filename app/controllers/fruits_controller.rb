@@ -71,6 +71,6 @@ class FruitsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def fruit_params
-      params.require(:fruit).permit(:name, :description)
+      params.require(:fruit).permit(:name, :description, :position)
     end
 end
