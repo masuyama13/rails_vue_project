@@ -38,22 +38,22 @@ export default {
     draggable
   },
   created() {
-    fetch(`/fruits.json`, {
+    fetch('/fruits.json', {
       method: 'GET',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
       },
       credentials: 'same-origin',
     })
-      .then(response => {
-        return response.json()
+    .then(response => {
+      console.log(response)
+      return response.json().then(json => {
+        this.fruits = json
       })
-      .then(json => {
-        json.forEach(c => { this.fruits.push(c) });
-      })
-      .catch(error => {
-        console.warn('Failed to parsing', error)
-      })
+    })
+    .catch(error => {
+      console.warn('Failed to parsing', error)
+    })
   }
 }
 </script>
