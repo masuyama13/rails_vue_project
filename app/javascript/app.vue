@@ -90,29 +90,31 @@ export default {
       })
     },
     destroyFruit(id) {
-      let params = {
-        id: this.id
-      }
-      fetch(`/fruits/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-          'X-Requested-With': 'XMLHttpRequest',
-          'X-CSRF-Token': this.token()
-        },
-        credentials: 'same-origin',
-        redirect: 'manual',
-        body: JSON.stringify(params)
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+      if (window.confirm('削除してよろしいですか？')) {
+        let params = {
+          id: this.id
         }
-        return response.blob();
-      })
-      .catch(error => {
-        console.error('There has been a problem with your fetch operation:', error)
-      })
+        fetch(`/fruits/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-Token': this.token()
+          },
+          credentials: 'same-origin',
+          redirect: 'manual',
+          body: JSON.stringify(params)
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.blob();
+        })
+        .catch(error => {
+          console.error('There has been a problem with your fetch operation:', error)
+        })
+      }
     },
     dropped() {
       this.fruits.forEach((fruit, index) => {
