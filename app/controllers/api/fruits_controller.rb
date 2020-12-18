@@ -22,6 +22,13 @@ class Api::FruitsController < ApplicationController
     end
   end
 
+  def destroy
+    @fruit = Fruit.find(params[:id])
+    if @fruit.destroy
+      head :no_content
+    end
+  end
+
   private
     def fruit_params
       params.require(:fruit).permit(:name, :description, :position)

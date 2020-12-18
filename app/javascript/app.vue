@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <p>{{ fruits }}</p>
-    <button @click="addFruit">Add Fruit</button>
 
     <table>
       <thead>
@@ -13,13 +12,13 @@
           <th></th>
         </tr>
       </thead>
-      <draggable v-model="fruits" tag="tbody" @end="dropped">
-        <tr v-for="fruit in fruits">
+      <draggable v-model="fruits" tag="tbody" @end="dropped()">
+        <tr v-for="fruit in fruits" :key="fruit.id" @dragstart="dragstart(fruit)">
           <td>{{ fruit.name }}</td>
           <td>{{ fruit.description }}</td>
           <td>{{ fruit.position }}</td>
           <td><a :href="`/fruits/${fruit.id}/edit`">Edit</a></td>
-          <td><a @click="destroyFruit(fruit.id)">Destroy</a></td>
+          <td><a @click="destroyFruit(fruit)">Destroy</a></td>
         </tr>
       </draggable>
     </table>
@@ -31,45 +30,33 @@
 import draggable from "vuedraggable"
 
 export default {
+  props: ['fruitsData'],
   data() {
     return {
-      fruits: [],
-      dragging: false
+      fruits: JSON.parse(this.fruitsData),
+      draggingItem: ''
     }
   },
   components: {
     draggable
-  },
-  created() {
-    fetch('/fruits.json', {
-      method: 'GET',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-      },
-      credentials: 'same-origin',
-    })
-    .then(response => {
-      console.log(response)
-      return response.json().then(json => {
-        this.fruits = json
-      })
-    })
-    .catch(error => {
-      console.warn('Failed to parsing', error)
-    })
   },
   methods: {
     token () {
       const meta = document.querySelector('meta[name="csrf-token"]')
       return meta ? meta.getAttribute('content') : ''
     },
-    addFruit() {
-      let params = {
-        name: '何かの果物',
-        description: '特になし。'
+    dragstart(fruit) {
+      this.draggingItem = fruit
+    },
+    dropped() {
+      const targetId = this.draggingItem.id
+      const targetItem = this.fruits.find((v) => v.id === targetId)
+      const newPosition = this.fruits.indexOf(targetItem) + 1
+      const params = {
+        'position': newPosition
       }
-      fetch('/api/fruits', {
-        method: 'POST',
+      fetch(`/api/fruits/${targetId}.json`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
           'X-Requested-With': 'XMLHttpRequest',
@@ -81,20 +68,21 @@ export default {
       })
       .then(response => {
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error('Network response was not ok')
         }
-        return response.blob();
+        return response.blob()
       })
       .catch(error => {
-        console.error('There has been a problem with your fetch operation:', error)
+        console.error('Failed to parsing', error)
       })
     },
-    destroyFruit(id) {
+    destroyFruit(fruit) {
       if (window.confirm('削除してよろしいですか？')) {
-        let params = {
-          id: this.id
+        const params = {
+          id: fruit.id
         }
-        fetch(`/fruits/${id}`, {
+        this.fruits = this.fruits.filter(v => v.id !== fruit.id)
+        fetch(`/api/fruits/${fruit.id}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json; charset=utf-8',
@@ -115,38 +103,6 @@ export default {
           console.error('There has been a problem with your fetch operation:', error)
         })
       }
-    },
-    dropped() {
-      this.fruits.forEach((fruit, index) => {
-        fruit.position = index + 1
-        console.log('デバッグ用')
-        console.log(fruit.id)
-      })
-      this.fruits.forEach((fruit) => {
-        let params = {
-          'position': fruit.position
-        }
-        fetch(`/api/fruits/${fruit.id}.json`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json; charset=utf-8',
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRF-Token': this.token()
-          },
-          credentials: 'same-origin',
-          redirect: 'manual',
-          body: JSON.stringify(params)
-        })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok')
-          }
-          return response.blob()
-        })
-        .catch(error => {
-          console.error('Failed to parsing', error)
-        })
-      })
     }
   }
 }

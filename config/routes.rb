@@ -5,6 +5,6 @@ Rails.application.routes.draw do
   resources :books
   resources :fruits
   namespace :api do
-    resources :fruits, only: %i(create update)
+    resources :fruits, only: %i(create update destroy)
   end
 end
