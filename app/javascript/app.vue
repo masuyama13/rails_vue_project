@@ -7,15 +7,18 @@
         <tr>
           <th>Name</th>
           <th>Description</th>
-          <th></th>
+          <th>Position</th>
           <th></th>
           <th></th>
         </tr>
       </thead>
-      <draggable v-model="fruits" tag="tbody">
-        <tr v-for="fruit in fruits">
+      <draggable v-model="fruits" tag="tbody" @end="dropped()">
+        <tr v-for="fruit in fruits" :key="fruit.id" @dragstart="dragstart(fruit)">
           <td>{{ fruit.name }}</td>
           <td>{{ fruit.description }}</td>
+          <td>{{ fruit.position }}</td>
+          <td><a :href="`/fruits/${fruit.id}/edit`">Edit</a></td>
+          <td><a @click="destroyFruit(fruit)">Destroy</a></td>
         </tr>
       </draggable>
     </table>
@@ -27,33 +30,80 @@
 import draggable from "vuedraggable"
 
 export default {
+  props: ['fruitsData'],
   data() {
     return {
-      message: "Hello Vue!",
-      fruits: [],
-      dragging: false
+      fruits: JSON.parse(this.fruitsData),
+      draggingItem: ''
     }
   },
   components: {
     draggable
   },
-  created() {
-    fetch('/fruits.json', {
-      method: 'GET',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-      },
-      credentials: 'same-origin',
-    })
-    .then(response => {
-      console.log(response)
-      return response.json().then(json => {
-        this.fruits = json
+  methods: {
+    token () {
+      const meta = document.querySelector('meta[name="csrf-token"]')
+      return meta ? meta.getAttribute('content') : ''
+    },
+    dragstart(fruit) {
+      this.draggingItem = fruit
+    },
+    dropped() {
+      const targetId = this.draggingItem.id
+      const targetItem = this.fruits.find((v) => v.id === targetId)
+      const newPosition = this.fruits.indexOf(targetItem) + 1
+      const params = {
+        'position': newPosition
+      }
+      fetch(`/api/fruits/${targetId}.json`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-Token': this.token()
+        },
+        credentials: 'same-origin',
+        redirect: 'manual',
+        body: JSON.stringify(params)
       })
-    })
-    .catch(error => {
-      console.warn('Failed to parsing', error)
-    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok')
+        }
+        return response.blob()
+      })
+      .catch(error => {
+        console.error('Failed to parsing', error)
+      })
+    },
+    destroyFruit(fruit) {
+      if (window.confirm('削除してよろしいですか？')) {
+        const params = {
+          id: fruit.id
+        }
+        this.fruits = this.fruits.filter(v => v.id !== fruit.id)
+        fetch(`/api/fruits/${fruit.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-Token': this.token()
+          },
+          credentials: 'same-origin',
+          redirect: 'manual',
+          body: JSON.stringify(params)
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.blob();
+        })
+        .catch(error => {
+          console.error('There has been a problem with your fetch operation:', error)
+        })
+      }
+    }
   }
 }
 </script>
