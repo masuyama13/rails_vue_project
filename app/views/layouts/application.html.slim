@@ -13,15 +13,13 @@ html
         nav.navbar
           .container
             .navbar-brand
-              a.navbar-item href='/'
+              = link_to root_path, class: 'navbar-item'
                 .title
                   | RailsVueProject
             #navbarMenuHeroA.navbar-menu
               .navbar-end
-                a.navbar-item href='/books'
+                = link_to books_path, class: 'navbar-item'
                   | Books
-                a.navbar-item href='/fruits'
+                = link_to fruits_path, class: 'navbar-item'
                   | Fruits
-                a.navbar-item href='/'
-                  | Documentation
     = yield
