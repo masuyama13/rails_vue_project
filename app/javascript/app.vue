@@ -1,13 +1,10 @@
 <template>
   <div id="app">
-    <p>{{ fruits }}</p>
-
     <table>
       <thead>
         <tr>
           <th>Name</th>
           <th>Description</th>
-          <th>Position</th>
           <th></th>
           <th></th>
         </tr>
@@ -16,7 +13,6 @@
         <tr v-for="fruit in fruits" :key="fruit.id" @dragstart="dragstart(fruit)">
           <td>{{ fruit.name }}</td>
           <td>{{ fruit.description }}</td>
-          <td>{{ fruit.position }}</td>
           <td><a :href="`/fruits/${fruit.id}/edit`">Edit</a></td>
           <td><a @click="destroyFruit(fruit)">Destroy</a></td>
         </tr>
