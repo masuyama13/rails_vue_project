@@ -27,7 +27,7 @@ import draggable from "vuedraggable"
 
 export default {
   props: ['fruitsData'],
-  data() {
+  data () {
     return {
       fruits: JSON.parse(this.fruitsData)
     }
@@ -40,12 +40,12 @@ export default {
       const meta = document.querySelector('meta[name="csrf-token"]')
       return meta ? meta.getAttribute('content') : ''
     },
-    dragstart(fruit) {
+    dragstart (fruit) {
       this.draggingItem = fruit
       const target = this.fruits.find((v) => v.id === this.draggingItem.id)
       this.oldPosition = this.fruits.indexOf(target) + 1
     },
-    dropped() {
+    dropped () {
       const targetId = this.draggingItem.id
       const targetItem = this.fruits.find((v) => v.id === targetId)
       const newPosition = this.fruits.indexOf(targetItem) + 1
@@ -75,7 +75,7 @@ export default {
         })
       }
     },
-    destroyFruit(fruit) {
+    destroyFruit (fruit) {
       if (window.confirm('削除してよろしいですか？')) {
         const params = {
           id: fruit.id
