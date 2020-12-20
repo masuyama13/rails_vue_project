@@ -27,10 +27,9 @@ import draggable from "vuedraggable"
 
 export default {
   props: ['fruitsData'],
-  data() {
+  data () {
     return {
-      fruits: JSON.parse(this.fruitsData),
-      draggingItem: ''
+      fruits: JSON.parse(this.fruitsData)
     }
   },
   components: {
@@ -41,38 +40,42 @@ export default {
       const meta = document.querySelector('meta[name="csrf-token"]')
       return meta ? meta.getAttribute('content') : ''
     },
-    dragstart(fruit) {
+    dragstart (fruit) {
       this.draggingItem = fruit
+      const target = this.fruits.find((v) => v.id === this.draggingItem.id)
+      this.oldPosition = this.fruits.indexOf(target) + 1
     },
-    dropped() {
+    dropped () {
       const targetId = this.draggingItem.id
       const targetItem = this.fruits.find((v) => v.id === targetId)
       const newPosition = this.fruits.indexOf(targetItem) + 1
-      const params = {
-        'position': newPosition
-      }
-      fetch(`/api/fruits/${targetId}.json`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-          'X-Requested-With': 'XMLHttpRequest',
-          'X-CSRF-Token': this.token()
-        },
-        credentials: 'same-origin',
-        redirect: 'manual',
-        body: JSON.stringify(params)
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok')
+      if (this.oldPosition !== newPosition) {
+        const params = {
+          'position': newPosition
         }
-        return response.blob()
-      })
-      .catch(error => {
-        console.error('Failed to parsing', error)
-      })
+        fetch(`/api/fruits/${targetId}.json`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-Token': this.token()
+          },
+          credentials: 'same-origin',
+          redirect: 'manual',
+          body: JSON.stringify(params)
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok')
+          }
+          return response.blob()
+        })
+        .catch(error => {
+          console.error('Failed to parsing', error)
+        })
+      }
     },
-    destroyFruit(fruit) {
+    destroyFruit (fruit) {
       if (window.confirm('削除してよろしいですか？')) {
         const params = {
           id: fruit.id
