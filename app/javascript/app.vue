@@ -9,7 +9,7 @@
           <th></th>
         </tr>
       </thead>
-      <draggable v-model="fruits" tag="tbody" @end="dropped()">
+      <draggable v-model="fruits" tag="tbody" @start="start" @end="dropped">
         <tr v-for="fruit in fruits" :key="fruit.id" @dragstart="dragstart(fruit)">
           <td>{{ fruit.name }}</td>
           <td>{{ fruit.description }}</td>
@@ -29,7 +29,10 @@ export default {
   props: ['fruitsData'],
   data () {
     return {
-      fruits: JSON.parse(this.fruitsData)
+      fruits: JSON.parse(this.fruitsData),
+      beforeDragging: '',
+      draggingItem: '',
+      oldPosition: null
     }
   },
   components: {
@@ -39,6 +42,9 @@ export default {
     token () {
       const meta = document.querySelector('meta[name="csrf-token"]')
       return meta ? meta.getAttribute('content') : ''
+    },
+    start () {
+      this.beforeDragging = this.fruits
     },
     dragstart (fruit) {
       this.draggingItem = fruit
@@ -64,15 +70,16 @@ export default {
           redirect: 'manual',
           body: JSON.stringify(params)
         })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok')
-          }
-          return response.blob()
-        })
-        .catch(error => {
-          console.error('Failed to parsing', error)
-        })
+          .then(response => {
+            if (response.ok) {
+              return response.json()
+            } else {
+              this.fruits = this.beforeDragging
+            }
+          })
+          .catch(error => {
+            console.error('Failed to parsing', error)
+          })
       }
     },
     destroyFruit (fruit) {
@@ -80,8 +87,7 @@ export default {
         const params = {
           id: fruit.id
         }
-        this.fruits = this.fruits.filter(v => v.id !== fruit.id)
-        fetch(`/api/fruits/${fruit.id}`, {
+        fetch(`/api/fruits/${fruit.id}.json`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json; charset=utf-8',
@@ -92,15 +98,14 @@ export default {
           redirect: 'manual',
           body: JSON.stringify(params)
         })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.blob();
-        })
-        .catch(error => {
-          console.error('There has been a problem with your fetch operation:', error)
-        })
+          .then(response => {
+            if (response.ok) {
+              this.fruits = this.fruits.filter(v => v.id !== fruit.id)
+            }
+          })
+          .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error)
+          })
       }
     }
   }
