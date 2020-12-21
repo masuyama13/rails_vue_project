@@ -84,9 +84,6 @@ export default {
     },
     destroyFruit (fruit) {
       if (window.confirm('削除してよろしいですか？')) {
-        const params = {
-          id: fruit.id
-        }
         fetch(`/api/fruits/${fruit.id}.json`, {
           method: 'DELETE',
           headers: {
@@ -96,7 +93,6 @@ export default {
           },
           credentials: 'same-origin',
           redirect: 'manual',
-          body: JSON.stringify(params)
         })
           .then(response => {
             if (response.ok) {
