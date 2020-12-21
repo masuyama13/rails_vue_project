@@ -87,8 +87,7 @@ export default {
         const params = {
           id: fruit.id
         }
-        this.fruits = this.fruits.filter(v => v.id !== fruit.id)
-        fetch(`/api/fruits/${fruit.id}`, {
+        fetch(`/api/fruits/${fruit.id}.json`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json; charset=utf-8',
@@ -99,15 +98,14 @@ export default {
           redirect: 'manual',
           body: JSON.stringify(params)
         })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.blob();
-        })
-        .catch(error => {
-          console.error('There has been a problem with your fetch operation:', error)
-        })
+          .then(response => {
+            if (response.ok) {
+              this.fruits = this.fruits.filter(v => v.id !== fruit.id)
+            }
+          })
+          .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error)
+          })
       }
     }
   }
