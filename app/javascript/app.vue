@@ -114,4 +114,7 @@ export default {
 p, .center {
   text-align: center;
 }
+.handle {
+  cursor: grab;
+}
 </style>
