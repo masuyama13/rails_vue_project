@@ -7,14 +7,16 @@
           <th>Description</th>
           <th></th>
           <th></th>
+          <th>並び替え</th>
         </tr>
       </thead>
-      <draggable v-model="fruits" tag="tbody" @start="start" @end="dropped">
+      <draggable v-model="fruits" handle=".handle" tag="tbody" @start="start" @end="dropped">
         <tr v-for="fruit in fruits" :key="fruit.id" @dragstart="dragstart(fruit)">
           <td>{{ fruit.name }}</td>
           <td>{{ fruit.description }}</td>
           <td><a :href="`/fruits/${fruit.id}/edit`">Edit</a></td>
           <td><a @click="destroyFruit(fruit)">Destroy</a></td>
+          <td class="center"><span class="handle">::</span></td>
         </tr>
       </draggable>
     </table>
@@ -109,7 +111,7 @@ export default {
 </script>
 
 <style scoped>
-p {
+p, .center {
   text-align: center;
 }
 </style>
