@@ -61,7 +61,7 @@ export default {
         const params = {
           'position': newPosition
         }
-        fetch(`/api/fruits/${targetId}.json`, {
+        fetch(`/api/fruits/${targetId}/position.json`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json; charset=utf-8',
@@ -73,9 +73,7 @@ export default {
           body: JSON.stringify(params)
         })
           .then(response => {
-            if (response.ok) {
-              return response.json()
-            } else {
+            if (!response.ok) {
               this.fruits = this.beforeDragging
             }
           })
