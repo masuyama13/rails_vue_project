@@ -50,13 +50,12 @@ export default {
     },
     dragstart (fruit) {
       this.draggingItem = fruit
-      const target = this.fruits.find((v) => v.id === this.draggingItem.id)
-      this.oldPosition = this.fruits.indexOf(target) + 1
+      // position値は1から始まるので、インデックス番号+1
+      this.oldPosition = this.fruits.findIndex((v) => v.id === this.draggingItem.id) + 1
     },
     dropped () {
       const targetId = this.draggingItem.id
-      const targetItem = this.fruits.find((v) => v.id === targetId)
-      const newPosition = this.fruits.indexOf(targetItem) + 1
+      const newPosition = this.fruits.findIndex((v) => v.id === targetId) + 1
       if (this.oldPosition !== newPosition) {
         const params = {
           'position': newPosition
