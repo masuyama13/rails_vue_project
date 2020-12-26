@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Api::Fruits::PositionController < ApplicationController
+  wrap_parameters :category
+
   def update
     @fruit = Fruit.find(params[:fruit_id])
     if @fruit.update(fruit_params)
@@ -12,6 +14,6 @@ class Api::Fruits::PositionController < ApplicationController
 
   private
     def fruit_params
-      params.permit(:position)
+      params.require(:category).permit(:position)
     end
 end
