@@ -11,7 +11,7 @@
         </tr>
       </thead>
       <draggable v-model="fruits" handle=".handle" tag="tbody" @start="start" @end="dropped">
-        <tr v-for="fruit in fruits" :key="fruit.id" @dragstart="dragstart(fruit)">
+        <tr v-for="fruit in fruits" :key="fruit.id">
           <td>{{ fruit.name }}</td>
           <td>{{ fruit.description }}</td>
           <td><a :href="`/fruits/${fruit.id}/edit`">Edit</a></td>
@@ -33,8 +33,7 @@ export default {
     return {
       fruits: JSON.parse(this.fruitsData),
       beforeDragging: '',
-      draggingItem: '',
-      oldPosition: null
+      draggingItem: ''
     }
   },
   components: {
@@ -48,19 +47,14 @@ export default {
     start () {
       this.beforeDragging = this.fruits
     },
-    dragstart (fruit) {
-      this.draggingItem = fruit
-      // position値は1から始まるので、インデックス番号+1
-      this.oldPosition = this.fruits.findIndex((v) => v.id === this.draggingItem.id) + 1
-    },
-    dropped () {
-      const targetId = this.draggingItem.id
-      const newPosition = this.fruits.findIndex((v) => v.id === targetId) + 1
-      if (this.oldPosition !== newPosition) {
+    dropped (e) {
+      this.draggingItem = this.beforeDragging[e.oldIndex]
+      if (e.oldIndex !== e.newIndex) {
         const params = {
-          position: newPosition
+          // position値は1から始まるので、インデックス番号+1
+          position: e.newIndex + 1
         }
-        fetch(`/api/fruits/${targetId}/position.json`, {
+        fetch(`/api/fruits/${this.draggingItem.id}/position.json`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json; charset=utf-8',
