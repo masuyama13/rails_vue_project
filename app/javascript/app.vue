@@ -58,7 +58,7 @@ export default {
       const newPosition = this.fruits.findIndex((v) => v.id === targetId) + 1
       if (this.oldPosition !== newPosition) {
         const params = {
-          'position': newPosition
+          position: newPosition
         }
         fetch(`/api/fruits/${targetId}/position.json`, {
           method: 'PATCH',
