@@ -61,3 +61,6 @@ gem "slim-rails"
 gem "html2slim"
 gem "bulma-rails"
 gem "acts_as_list"
+gem "rubocop-rails", require: false
+gem "rubocop-performance", require: false
+gem "rubocop-packaging", require: false
