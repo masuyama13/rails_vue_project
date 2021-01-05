@@ -9,7 +9,6 @@ name: Rails-Project
 
 on:
   push:
-    branches: [ main ]
 
 jobs:
   test:
